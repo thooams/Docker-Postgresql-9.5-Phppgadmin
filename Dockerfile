@@ -2,8 +2,10 @@ FROM debian:jessie
 
 MAINTAINER Pierre-Antoine 'ZHAJOR' Tible <antoinetible@gmail.com>
 
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
 RUN apt-get update
-RUN apt-get -y install apache2 libapache2-mod-php5 php5 php5-pgsql postgresql-9.4 postgresql-client-9.4 postgresql-contrib wget unzip
+RUN apt-get -y install apache2 libapache2-mod-php5 php5 php5-pgsql postgresql postgresql-contrib wget unzip
 RUN apt-get clean
 
 ENV APACHE_RUN_USER www-data
@@ -25,9 +27,9 @@ RUN sed -i "s/\$conf\['extra_login_security'\] = true;/\$conf\['extra_login_secu
 RUN sed -i "s/\$conf\['servers'\]\[0\]\['host'\] = '';/\$conf\['servers'\]\[0\]\['host'\] = 'localhost';/g" conf/config.inc.php
 
 RUN service postgresql start; \
-  su - postgres -c "/usr/lib/postgresql/9.4/bin/psql -U postgres -c \"ALTER USER postgres with password 'postgres';\""
-RUN sed -i "s/\#listen_addresses = 'localhost'/listen_addresses = '\*'/g" /etc/postgresql/9.4/main/postgresql.conf
-RUN echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+  su - postgres -c "/usr/lib/postgresql/9.5/bin/psql -U postgres -c \"ALTER USER postgres with password 'postgres';\""
+RUN sed -i "s/\#listen_addresses = 'localhost'/listen_addresses = '\*'/g" /etc/postgresql/9.5/main/postgresql.conf
+RUN echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/9.5/main/pg_hba.conf
 
 ADD run.sh /run.sh
 RUN chmod -v +x /run.sh
