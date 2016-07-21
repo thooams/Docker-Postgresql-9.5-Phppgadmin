@@ -1,28 +1,29 @@
 FROM debian:jessie
 
-MAINTAINER Pierre-Antoine 'ZHAJOR' Tible <antoinetible@gmail.com>
+MAINTAINER Thomas HUMMEL <thomas@hummel.link>
 
 RUN apt-get update
 RUN apt-get -y install wget lsb-release
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
 RUN apt-get update
-RUN apt-get -y install apache2 libapache2-mod-php5 php5 php5-pgsql postgresql postgresql-contrib wget unzip
+RUN apt-get -y install apache2 libapache2-mod-php5 php5 php5-pgsql postgresql postgresql-contrib wget unzip vim
 RUN apt-get clean
 
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
-RUN ln -sf /dev/stdout /var/log/apache2/access.log 
-RUN ln -sf /dev/stdout /var/log/apache2/error.log
+#RUN ln -sf /dev/stdout /var/log/apache2/access.log
+#RUN ln -sf /dev/stdout /var/log/apache2/error.log
 
 RUN chown -R www-data:www-data /var/log/apache2 /var/www/html
 
 WORKDIR /var/www/html
-RUN wget https://github.com/phppgadmin/phppgadmin/archive/master.zip
-RUN rm /var/www/html/index.html && unzip /var/www/html/master.zip
-RUN cp -R phppgadmin-master/* . && rm -r phppgadmin-master
+#RUN wget https://github.com/phppgadmin/phppgadmin/archive/master.zip
+RUN wget https://github.com/garak/phppgadmin/archive/patch-1.zip
+RUN rm /var/www/html/index.html && unzip /var/www/html/patch-1.zip
+RUN cp -R phppgadmin-patch-1/* . && rm -r phppgadmin-patch-1
 
 RUN cp conf/config.inc.php-dist conf/config.inc.php
 RUN sed -i "s/\$conf\['extra_login_security'\] = true;/\$conf\['extra_login_security'\] = false;/g" conf/config.inc.php
